@@ -235,5 +235,32 @@ class MemberRepositoryTest{
         assertThat(members.stream().map(Member::getUsername).anyMatch(m -> stringList.stream().anyMatch(e -> e.equals(m)))).isTrue();
     }
 
+    @Test
+    public void queryHint() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
 
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+    }
+
+    @Test
+    public void lock() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        List<Member> memberList = memberRepository.findLockByUsername("member1");
+
+    }
+
+    @Test
+    public void callCustom() {
+        List<Member> result = memberRepository.findMemberCustom();
+    }
 }
