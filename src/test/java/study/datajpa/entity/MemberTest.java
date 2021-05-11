@@ -21,6 +21,7 @@ class MemberTest {
     EntityManager em;
 
     @Test
+    @Rollback(false)
     public void testEntity() {
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");

@@ -1,6 +1,5 @@
 package study.datajpa.repository;
 
-import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +36,7 @@ class MemberRepositoryTest{
         Member member = new Member("MemberA");
         Member savedMember = memberRepository.save(member);
 
-        Member findMember = memberRepository.findById(savedMember.getId()).get();
+        Member findMember = memberRepository.findById(savedMember.getId()).orElseGet(() -> new Member("Empty"));
 
         assertThat(findMember.getId()).isEqualTo(member.getId());
         assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
@@ -51,8 +50,8 @@ class MemberRepositoryTest{
         memberRepository.save(member1);
         memberRepository.save(member2);
 
-        Member findMember1 = memberRepository.findById(member1.getId()).get();
-        Member findMember2 = memberRepository.findById(member2.getId()).get();
+        Member findMember1 = memberRepository.findById(member1.getId()).orElseGet(() -> new Member("Empty"));
+        Member findMember2 = memberRepository.findById(member2.getId()).orElseGet(() -> new Member("Empty"));
 
         assertThat(findMember1).isEqualTo(member1);
         assertThat(findMember2).isEqualTo(member2);
@@ -160,7 +159,7 @@ class MemberRepositoryTest{
 
         assertThat(foundMemberList.stream().anyMatch(m -> m.equals(foundMember))).isTrue();
         assertThat(foundMemberList.stream().filter(m -> m.equals(foundMember)).count()).isEqualTo(1);
-        assertThat(foundOptionalMember.get()).isEqualTo(foundMember);
+        assertThat(foundOptionalMember.orElseGet(() -> new Member("Empty"))).isEqualTo(foundMember);
 
         List<Member> nullResultList = memberRepository.findListByUsername("asdfdf");
         assertThat(nullResultList).isEmpty();
@@ -304,7 +303,7 @@ class MemberRepositoryTest{
     }
 
     @Test
-    public void basic() throws Exception {
+    public void basic() {
         //given
         Team teamA = new Team("teamA");
         em.persist(teamA);
